@@ -1,11 +1,9 @@
 {
-  "username": "postgres",
-  "password": "docker",
-
-  "name": "default",
   "type": "postgres",
-  "host": "localhost",
   "port": 5432,
+  "host": "localhost",
+  "username": "docker",
+  "password": "ignite-test",
   "database": "fin_api",
   "entities": [
     "./src/modules/**/entities/*.ts"
