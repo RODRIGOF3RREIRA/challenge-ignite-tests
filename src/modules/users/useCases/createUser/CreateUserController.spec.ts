@@ -25,4 +25,17 @@ describe("Create User Controller", () => {
     });
     expect(response.status).toBe(201);
   });
+
+  it("should return status 400 when creating a user with an existing email", async () => {
+    const user = {
+      name: "Name user",
+      email: "email@test.com",
+      password: "123123",
+    };
+
+    await request(app).post("/api/v1/users").send(user);
+    const result = await request(app).post("/api/v1/users").send(user);
+
+    expect(result.status).toBe(400);
+  });
 });
