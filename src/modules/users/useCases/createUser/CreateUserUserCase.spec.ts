@@ -1,5 +1,7 @@
 import { InMemoryUsersRepository } from "../../repositories/in-memory/InMemoryUsersRepository";
+import { CreateUserError } from "./CreateUserError";
 import { CreateUserUseCase } from "./CreateUserUseCase";
+import { ICreateUserDTO } from "./ICreateUserDTO";
 
 let createUserUseCase: CreateUserUseCase;
 let inMemoryUsersRepository: InMemoryUsersRepository;
@@ -16,7 +18,20 @@ describe("Create User", () => {
       email: "email@test.com",
       password: "123123",
     });
-    console.log(user);
     expect(user).toHaveProperty("id");
+  });
+
+  it("should not be able to create a new user with same email", async () => {
+    const user: ICreateUserDTO = {
+      name: "Name user",
+      email: "email@test.com",
+      password: "123123",
+    };
+
+    await createUserUseCase.execute(user);
+
+    await expect(createUserUseCase.execute(user)).rejects.toEqual(
+      new CreateUserError()
+    );
   });
 });
