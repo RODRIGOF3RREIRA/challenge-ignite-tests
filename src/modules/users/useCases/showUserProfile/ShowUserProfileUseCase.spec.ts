@@ -52,3 +52,11 @@ describe("Show User Profile Use Case", () => {
     expect(result.email).toBe(makeUser.email);
     expect(result.name).toBe(makeUser.name);
   });
+
+  it("should be not able to show profile a non existent user", async () => {
+    expect(async () => {
+      const id = "invalidId";
+      await sut.execute(id);
+    }).rejects.toEqual(new ShowUserProfileError());
+  });
+});
