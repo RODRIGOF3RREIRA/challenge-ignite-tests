@@ -42,3 +42,12 @@ describe("Show User Controller", () => {
     expect(response.body).toHaveProperty("id");
     expect(response.body.email).toEqual("showuser@test.com");
   });
+
+  it("should not be able to list a non-existent user", async () => {
+    const response = await request(app).get("/api/v1/profile").send().set({
+      Authorization: "invalidToken",
+    });
+
+    expect(response.status).toBe(401);
+  });
+});
