@@ -4,6 +4,7 @@ import { AuthenticateUserUseCase } from "../../../users/useCases/authenticateUse
 import { CreateUserUseCase } from "../../../users/useCases/createUser/CreateUserUseCase";
 import { ICreateUserDTO } from "../../../users/useCases/createUser/ICreateUserDTO";
 import { InMemoryStatementsRepository } from "../../repositories/in-memory/InMemoryStatementsRepository";
+import { CreateStatementError } from "./CreateStatementError";
 import { CreateStatementUseCase } from "./CreateStatementUseCase";
 import { ICreateStatementDTO } from "./ICreateStatementDTO";
 
@@ -66,5 +67,18 @@ describe("Create Statement Use Case", () => {
     expect(result.type).toBe("deposit");
     expect(result.amount).toBe(500);
     expect(result.description).toEqual("deposit test");
+  });
+
+  it("should not be able to create a new deposit a non existent user", async () => {
+    const deposit: ICreateStatementDTO = {
+      user_id: "fake-user",
+      amount: 500,
+      description: "deposit test",
+      type: "deposit" as OperationType,
+    };
+
+    await expect(createStatementUseCase.execute(deposit)).rejects.toEqual(
+      new CreateStatementError.UserNotFound()
+    );
   });
 });
