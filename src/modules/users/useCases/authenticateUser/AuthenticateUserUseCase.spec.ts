@@ -30,3 +30,12 @@ describe("Authenticate User Use Case", () => {
 
     expect(result).toHaveProperty("token");
   });
+
+  it("should not be able to authenticate a non existent user", async () => {
+    await expect(
+      sut.execute({
+        email: "test@gmail.com",
+        password: "123123",
+      })
+    ).rejects.toEqual(new IncorrectEmailOrPasswordError());
+  });
