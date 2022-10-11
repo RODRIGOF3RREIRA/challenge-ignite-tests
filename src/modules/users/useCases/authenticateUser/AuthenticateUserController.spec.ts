@@ -41,3 +41,19 @@ describe("Authenticate User Controller", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("should not be able to authenticate with incorrect password", async () => {
+    await request(app).post("/api/v1/users").send({
+      name: "user name",
+      email: "test@email.com",
+      password: "123123",
+    });
+
+    const response = await request(app).post("/api/v1/sessions").send({
+      email: "test@email.com",
+      password: "121212",
+    });
+
+    expect(response.status).toBe(401);
+  });
+});
