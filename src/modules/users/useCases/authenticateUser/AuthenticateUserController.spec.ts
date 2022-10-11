@@ -32,3 +32,12 @@ describe("Authenticate User Controller", () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("token");
   });
+
+  it("should not be able to authenticate a non existent user", async () => {
+    const response = await request(app).post("/api/v1/sessions").send({
+      email: "test@email.com",
+      password: "123123",
+    });
+
+    expect(response.status).toBe(401);
+  });
