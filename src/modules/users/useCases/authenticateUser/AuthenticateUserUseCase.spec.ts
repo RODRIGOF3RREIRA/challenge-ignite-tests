@@ -39,3 +39,20 @@ describe("Authenticate User Use Case", () => {
       })
     ).rejects.toEqual(new IncorrectEmailOrPasswordError());
   });
+
+  it("should be able to authenticate an user", async () => {
+    const user = {
+      name: "Name user",
+      email: "email@test.com",
+      password: "123123",
+    };
+
+    await createUserUseCase.execute(user);
+    await expect(
+      sut.execute({
+        email: "email@test.com",
+        password: "222222",
+      })
+    ).rejects.toEqual(new IncorrectEmailOrPasswordError());
+  });
+});
