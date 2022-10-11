@@ -46,8 +46,6 @@ describe("Show User Profile Use Case", () => {
 
     const result = await sut.execute(user_id);
 
-    console.log(result);
-
     expect(result).toHaveProperty("id");
     expect(result.email).toBe(makeUser.email);
     expect(result.name).toBe(makeUser.name);
