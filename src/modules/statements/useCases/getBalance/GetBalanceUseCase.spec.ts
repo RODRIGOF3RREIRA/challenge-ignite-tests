@@ -6,6 +6,7 @@ import { ICreateUserDTO } from "../../../users/useCases/createUser/ICreateUserDT
 import { InMemoryStatementsRepository } from "../../repositories/in-memory/InMemoryStatementsRepository";
 import { CreateStatementUseCase } from "../createStatement/CreateStatementUseCase";
 import { ICreateStatementDTO } from "../createStatement/ICreateStatementDTO";
+import { GetBalanceError } from "./GetBalanceError";
 import { GetBalanceUseCase } from "./GetBalanceUseCase";
 
 let inMemoryUsersRepository: InMemoryUsersRepository;
@@ -85,5 +86,13 @@ describe("Get Balance Use Case", () => {
 
     expect(result.balance).toBe(400);
     expect(result.statement.length).toBe(2);
+  });
+
+  it("should not be able to list balance a non existent user", async () => {
+    const user_id = "invalidUser";
+
+    await expect(getBalanceUseCase.execute({ user_id })).rejects.toEqual(
+      new GetBalanceError()
+    );
   });
 });
