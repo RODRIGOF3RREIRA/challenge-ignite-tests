@@ -93,4 +93,24 @@ describe("list a statement", () => {
       getStatementOperationUseCase.execute({ user_id, statement_id })
     ).rejects.toEqual(new GetStatementOperationError.UserNotFound());
   });
+
+  it("should not be able to view a non existent statement", async () => {
+    await createUserUseCase.execute(makeUser);
+
+    const userAuthenticated = await authenticateUserUseCase.execute({
+      email: makeUser.email,
+      password: makeUser.password,
+    });
+
+    const { sub: user_id } = verify(
+      userAuthenticated.token,
+      "5eea5555d10a2d4be645930d0d0c5f91"
+    ) as IPayload;
+
+    const statement_id = "invalidStatement";
+
+    await expect(
+      getStatementOperationUseCase.execute({ user_id, statement_id })
+    ).rejects.toEqual(new GetStatementOperationError.StatementNotFound());
+  });
 });
