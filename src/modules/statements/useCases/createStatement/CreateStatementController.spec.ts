@@ -109,3 +109,25 @@ describe("Create Statement Controller", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("should not be able to create a new withdraw with insufficient funds", async () => {
+    const responseToken = await request(app).post("/api/v1/sessions").send({
+      email: makeUser.email,
+      password: makeUser.password,
+    });
+
+    const { token } = responseToken.body;
+
+    const response = await request(app)
+      .post("/api/v1/statements/withdraw")
+      .send({
+        amount: 100,
+        description: "withdraw test",
+      })
+      .set({
+        Authorization: `Bearer ${token}`,
+      });
+
+    expect(response.status).toBe(400);
+  });
+});
