@@ -90,3 +90,25 @@ describe("show the specific statement operation", () => {
     expect(response.status).toBe(401);
   });
 
+  it("should not be able to view a non existent statement", async () => {
+    await request(app).post("/api/v1/users").send(makeUser);
+
+    const responseToken = await request(app).post("/api/v1/sessions").send({
+      email: makeUser.email,
+      password: makeUser.password,
+    });
+
+    const { token } = responseToken.body;
+
+    const id = uuidV4();
+
+    const response = await request(app)
+      .get(`/api/v1/statements/${id}`)
+      .send()
+      .set({
+        Authorization: `Bearer ${token}`,
+      });
+
+    expect(response.status).toBe(404);
+  });
+});
