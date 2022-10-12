@@ -47,3 +47,17 @@ describe("Create Statement Controller", () => {
     expect(response.body.description).toBe("deposit test");
     expect(response.body).toHaveProperty("id");
   });
+
+  it("should not be able to create a new deposit a non existent user", async () => {
+    const response = await request(app)
+      .post("/api/v1/statements/deposit")
+      .send({
+        amount: 500,
+        description: "Deposit test",
+      })
+      .set({
+        Authorization: "invalidToken",
+      });
+
+    expect(response.status).toBe(401);
+  });
