@@ -5,6 +5,7 @@ import { verify } from "jsonwebtoken";
 import { AuthenticateUserUseCase } from "../../../users/useCases/authenticateUser/AuthenticateUserUseCase";
 import { CreateUserUseCase } from "../../../users/useCases/createUser/CreateUserUseCase";
 import { ICreateUserDTO } from "../../../users/useCases/createUser/ICreateUserDTO";
+import { GetStatementOperationError } from "./GetStatementOperationError";
 import { GetStatementOperationUseCase } from "./GetStatementOperationUseCase";
 
 let inMemoryUsersRepository: InMemoryUsersRepository;
@@ -74,5 +75,22 @@ describe("list a statement", () => {
     expect(result).toHaveProperty("type");
     expect(result.amount).toBe(500);
     expect(result).toHaveProperty("id");
+  });
+
+  it("should not be able to view a statement a non existent user", async () => {
+    const user_id = "invalidUser";
+
+    const statement = await inMemoryStatementsRepository.create({
+      user_id,
+      amount: 500,
+      description: "deposit test",
+      type: "deposit" as OperationType,
+    });
+
+    const statement_id = statement.id as string;
+
+    await expect(
+      getStatementOperationUseCase.execute({ user_id, statement_id })
+    ).rejects.toEqual(new GetStatementOperationError.UserNotFound());
   });
 });
