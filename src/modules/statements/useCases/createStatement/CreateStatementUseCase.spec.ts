@@ -118,4 +118,51 @@ describe("Create Statement Use Case", () => {
     expect(result.amount).toBe(100);
     expect(result.description).toEqual("withdraw test");
   });
+
+  it("should not be able to create a new withdraw a non existent user", async () => {
+    const withdraw: ICreateStatementDTO = {
+      user_id: "fake-user",
+      amount: 500,
+      description: "withdraw test",
+      type: "withdraw" as OperationType,
+    };
+
+    await expect(createStatementUseCase.execute(withdraw)).rejects.toEqual(
+      new CreateStatementError.UserNotFound()
+    );
+  });
+
+  it("should not be able to create a new withdraw with insufficient funds", async () => {
+    await createUserUseCase.execute(makeUser);
+
+    const userAuthenticated = await authenticateUserUseCase.execute({
+      email: makeUser.email,
+      password: makeUser.password,
+    });
+
+    const { sub: user_id } = verify(
+      userAuthenticated.token,
+      "5eea5555d10a2d4be645930d0d0c5f91"
+    ) as IPayload;
+
+    const deposit: ICreateStatementDTO = {
+      user_id,
+      amount: 500,
+      description: "deposit test",
+      type: "deposit" as OperationType,
+    };
+
+    await createStatementUseCase.execute(deposit);
+
+    const withdraw: ICreateStatementDTO = {
+      user_id,
+      amount: 800,
+      description: "withdraw test",
+      type: "withdraw" as OperationType,
+    };
+
+    await expect(createStatementUseCase.execute(withdraw)).rejects.toEqual(
+      new CreateStatementError.InsufficientFunds()
+    );
+  });
 });
