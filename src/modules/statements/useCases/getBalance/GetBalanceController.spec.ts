@@ -62,3 +62,15 @@ describe("Create Statement Controller", () => {
     expect(response.body).toHaveProperty("balance");
     expect(response.body.balance).toEqual(300);
   });
+
+  it("should not be able to get a balance with user non exists", async () => {
+    const response = await request(app)
+      .get("/api/v1/statements/balance")
+      .send()
+      .set({
+        Authorization: "invalidToken",
+      });
+
+    expect(response.status).toBe(401);
+  });
+});
