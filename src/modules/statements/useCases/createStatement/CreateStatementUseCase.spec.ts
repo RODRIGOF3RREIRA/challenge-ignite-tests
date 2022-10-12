@@ -81,4 +81,41 @@ describe("Create Statement Use Case", () => {
       new CreateStatementError.UserNotFound()
     );
   });
+
+  it("should be able to create a new withdraw", async () => {
+    await createUserUseCase.execute(makeUser);
+
+    const userAuthenticated = await authenticateUserUseCase.execute({
+      email: makeUser.email,
+      password: makeUser.password,
+    });
+
+    const { sub: user_id } = verify(
+      userAuthenticated.token,
+      "5eea5555d10a2d4be645930d0d0c5f91"
+    ) as IPayload;
+
+    const deposit: ICreateStatementDTO = {
+      user_id,
+      amount: 500,
+      description: "deposit test",
+      type: "deposit" as OperationType,
+    };
+
+    await createStatementUseCase.execute(deposit);
+
+    const withdraw: ICreateStatementDTO = {
+      user_id,
+      amount: 100,
+      description: "withdraw test",
+      type: "withdraw" as OperationType,
+    };
+
+    const result = await createStatementUseCase.execute(withdraw);
+
+    expect(result).toHaveProperty("id");
+    expect(result.type).toBe("withdraw");
+    expect(result.amount).toBe(100);
+    expect(result.description).toEqual("withdraw test");
+  });
 });
