@@ -57,3 +57,36 @@ describe("show the specific statement operation", () => {
     expect(response.body).toHaveProperty("id");
     expect(response.body.type).toEqual("deposit");
   });
+
+  it("should not be able to view a statement a non existent user", async () => {
+    await request(app).post("/api/v1/users").send(makeUser);
+
+    const responseToken = await request(app).post("/api/v1/sessions").send({
+      email: "test@test.com",
+      password: "123456",
+    });
+
+    const { token } = responseToken.body;
+
+    const deposit = await request(app)
+      .post("/api/v1/statements/deposit")
+      .send({
+        amount: 500,
+        description: "deposit test",
+      })
+      .set({
+        Authorization: `Bearer ${token}`,
+      });
+
+    const { id } = deposit.body;
+
+    const response = await request(app)
+      .get(`/api/v1/statements/${id}`)
+      .send()
+      .set({
+        Authorization: "Bearer invalidToken5689",
+      });
+
+    expect(response.status).toBe(401);
+  });
+
